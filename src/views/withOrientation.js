@@ -4,6 +4,8 @@ import hoistNonReactStatic from 'hoist-non-react-statics';
 
 export const isOrientationLandscape = ({ width, height }) => width > height;
 
+let listener;
+
 export default function(WrappedComponent) {
   class withOrientation extends React.Component {
     constructor() {
@@ -14,11 +16,11 @@ export default function(WrappedComponent) {
     }
 
     componentDidMount() {
-      Dimensions.addEventListener('change', this.handleOrientationChange);
+      listener = Dimensions.addEventListener('change', this.handleOrientationChange);
     }
 
     componentWillUnmount() {
-      Dimensions.removeEventListener('change', this.handleOrientationChange);
+      listener.remove();
     }
 
     handleOrientationChange = ({ window }) => {

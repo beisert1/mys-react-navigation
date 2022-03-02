@@ -8,6 +8,8 @@ import invariant from './utils/invariant';
 import docsUrl from './utils/docsUrl';
 import { urlToPathAndParams } from './routers/pathUtils';
 
+let listener;
+
 function isStateful(props) {
   return !props.navigation;
 }
@@ -200,7 +202,7 @@ export default function createNavigationContainer(Component) {
         }
       }
       _statefulContainerCount++;
-      Linking.addEventListener('url', this._handleOpenURL);
+      listener = Linking.addEventListener('url', this._handleOpenURL);
 
       // Pull out anything that can impact state
       const { persistenceKey, uriPrefix, enableURLHandling } = this.props;
@@ -293,7 +295,7 @@ export default function createNavigationContainer(Component) {
 
     componentWillUnmount() {
       this._isMounted = false;
-      Linking.removeEventListener('url', this._handleOpenURL);
+      listener.remove();
       this.subs && this.subs.remove();
 
       if (this._isStateful()) {
